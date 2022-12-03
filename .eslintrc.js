@@ -6,19 +6,16 @@ module.exports = {
         node: true,
     },
     extends: [
-        'eslint/recommended',
-        'plugin:import/recommended',
-        'plugin:import/typescript',
+        'eslint:recommended',
         'plugin:react/recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
-        'prettier',
-        'prettier/react',
-        'prettier/@typescript-eslint',
-        'standard-with-typescript',
+        'airbnb',
+        'airbnb/hooks',
+        'airbnb-typescript',
+        'plugin:prettier/recommended',
     ],
     overrides: [],
-    parser: '@typescript-eslint-parser',
+    parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: {
@@ -27,7 +24,7 @@ module.exports = {
         project: 'tsconfig.json',
         sourceType: 'module',
     },
-    plugins: ['react', 'prettier', '@typescript-eslint', '@typescript-eslint/tslint', 'react-hooks'],
+    plugins: ['react', '@typescript-eslint', 'react-hooks'],
     settings: {
         react: {
             version: 'detect',
@@ -35,10 +32,11 @@ module.exports = {
     },
     rules: {
         'prettier/prettier': 0,
-        // '@typescript-eslint/ban-ts-ignore': 0,
-        // '@typescript-eslint/ban-ts-comment': 0,
-        // '@typescript-eslint/camelcase': 0,
-        // '@typescript-eslint/no-namespace': 2,
-        // '@typescript-eslint/no-use-before-define': 0,
+        '@typescript-eslint/ban-ts-ignore': 0,
+        '@typescript-eslint/ban-ts-comment': 0,
+        '@typescript-eslint/no-namespace': 2,
+        '@typescript-eslint/jsx-no-useless-fragment': 0,
+        '@typescript-eslint/no-var-requires': 0,
+        // 'react/jsx-no-useless-fragment': 0,
     },
 };
