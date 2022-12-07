@@ -1,26 +1,13 @@
-import React, { useState } from 'react';
+import { User } from './components/User';
+import { useApp } from './AppContext';
 
-function App() {
-    const [resp, setResp] = useState(false);
-    const getRes = async () => {
-        setResp(false);
-        try {
-            const response = await fetch('/ping');
-            const data = await response.json();
-            setResp(data.data);
-        } catch (err) {
-            console.log(err);
-        }
-    };
+export function App(): JSX.Element {
+  const appContext = useApp();
 
-    return (
-        <>
-            {`Hello in StravaStats! Express: ${resp} `}
-            <button type="button" onClick={getRes}>
-                Click to test express
-            </button>
-        </>
-    );
+  return (
+    <>
+      <p>app</p>
+      <User />
+    </>
+  );
 }
-
-export default App;
