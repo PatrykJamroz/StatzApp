@@ -1,58 +1,39 @@
 import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from './models/User';
 import axios from 'axios';
+import { Athlete } from './models/Strava';
 
 interface AppContextProviderProps {
   children: React.ReactNode;
 }
 
 interface AppContextValue {
-  user: User | null;
-  ping(): void;
+  athlete: Athlete | null;
+  isLoading: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppContextProvider({ children }: AppContextProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [athlete, setAthlete] = useState<Athlete | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUser = async () => {
-    const userPromise = await fetch('/athlete');
-    // const userPromise = await fetch('/athlete');
-    console.log({ userPromise });
-    const loggedUser = await userPromise.json();
-    console.log({ loggedUser });
-    setUser(loggedUser);
-  };
-
-  // const ping = async () => {
-  //   console.log('click');
-  //   const pingPromise = await fetch('/api/ping');
-  //   console.log({ pingPromise });
-  //   const maybePong = await pingPromise.json();
-  //   console.log({ maybePong });
-  //   return;
-  // };
-
-  const ping = async () => {
-    console.log('test');
-    axios
-      .get('/api/ping')
-      .then((data) => console.log({ test2: data }))
-      .catch((e) => console.error(e));
-    // console.log({ pingPromise });
-    // const maybePong = await pingPromise.json();
-    // console.log({ maybePong });
-    // return;
+  const getAthlete = async () => {
+    await axios
+      .get('/api/athlete')
+      .then(({ data }) => setAthlete(data))
+      .catch((e: any) => {
+        console.error(e);
+        setAthlete(null);
+      });
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchUser();
-    // ping();
+    getAthlete();
   }, []);
 
-  const appContextValue: AppContextValue = { user, ping };
+  const appContextValue: AppContextValue = { athlete, isLoading };
 
   return <AppContext.Provider value={appContextValue}>{children}</AppContext.Provider>;
 }

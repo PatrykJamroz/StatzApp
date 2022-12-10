@@ -13,7 +13,6 @@ module.exports = {
     'airbnb-typescript',
     'plugin:prettier/recommended'
   ],
-  // tsconfigRootDir: __dirname,
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -28,6 +27,6 @@ module.exports = {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
     'import/prefer-default-export': 'off',
-    'no-var: off'
+    'no-var': 'off'
   }
 };

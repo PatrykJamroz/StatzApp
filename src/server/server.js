@@ -55,22 +55,37 @@ app.use(app.router);
 //   next();
 // });
 
-app.get(
-  '/auth/strava',
-  passport.authenticate('strava', { scope: 'read_all,activity:read_all' }),
-  function (req, res) {
-    // The request will be redirected to Strava for authentication, so this
-    // function will not be called.
-  }
-);
+const SCOPES = 'read,activity:read_all,read_all';
+
+app.get('/auth/strava', passport.authenticate('strava', { scope: SCOPES }), function (req, res) {
+  // The request will be redirected to Strava for authentication, so this
+  // function will not be called.
+});
 
 app.get(
   '/auth/strava/callback',
-  passport.authenticate('strava', { scope: 'read', failureRedirect: '/login' }),
+  passport.authenticate('strava', {
+    scope: SCOPES,
+    failureRedirect: '/login'
+  }),
   function (req, res) {
     res.redirect('http://localhost:3000');
   }
 );
+
+app.get('/api/athlete', async (req, res) => {
+  fetch(`https://www.strava.com/api/v3/athlete?access_token=${req.user?.token ?? ''}`)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      res.status(response.status).json({ error: response.statusText });
+      throw new Error(`${response.status} - ${response.statusText}`);
+    })
+    .then((data) => res.json(data))
+    .catch((error) => console.error({ error }));
+});
+
 app.get('/activities', async function (req, res) {
   if (!req.user.token) {
     res.redirect('/login');
@@ -82,28 +97,6 @@ app.get('/activities', async function (req, res) {
   res.json({ activitiesData });
 });
 
-app.get('/user', (req, res) => {
-  // const user = { id: req.user.id, displayName: req.user.displayName, photos: req.user.photos };
-  res.send(req.user);
-});
-
-app.get('/athlete', async (req, res) => {
-  const athletePromise = await fetch(
-    `https://www.strava.com/api/v3/athlete?access_token=${req.user?.token ?? ''}`
-  );
-  // const athletePromise = await fetch(
-  //   `https://www.strava.com/api/v3/athlete?access_token=${req.session.passport.user?.token ?? ''}`
-  // );
-  const athleteData = await athletePromise.json();
-  console.log({ athleteData });
-  res.json(athleteData);
-});
-
-app.get('/api/ping', function (req, res) {
-  console.log(req.url);
-  res.json('pong');
-});
-
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -111,14 +104,14 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-app.get('/account', ensureAuthenticated, function (req, res) {
-  // res.render('account', { user: req.user });
-  res.json({ user: req.user });
-});
+// app.get('/account', ensureAuthenticated, function (req, res) {
+//   // res.render('account', { user: req.user });
+//   res.json({ user: req.user });
+// });
 
-app.get('/login', function (req, res) {
-  res.render('login', { user: req.user });
-});
+// app.get('/login', function (req, res) {
+//   res.render('login', { user: req.user });
+// });
 
 const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
