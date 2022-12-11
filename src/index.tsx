@@ -1,14 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './App';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { AppContextProvider } from './AppContext';
+import { About, Activities, Profile, Root } from './routes';
+
+const router = createBrowserRouter([
+  {
+    element: <Root />,
+    children: [
+      { path: '/', element: <Profile /> },
+      { path: '/activities', element: <Activities /> },
+      { path: '/about', element: <About /> }
+    ]
+  }
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <AppContextProvider>
-      <App />
+      <RouterProvider router={router} />
     </AppContextProvider>
   </React.StrictMode>
 );

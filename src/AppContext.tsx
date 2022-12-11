@@ -17,7 +17,6 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppContextProvider({ children }: AppContextProviderProps) {
   const [athlete, setAthlete] = useState<Athlete | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const getAthlete = async () => {
     await axios
       .get('/api/athlete')
