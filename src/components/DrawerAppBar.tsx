@@ -15,6 +15,7 @@ import Button from '@mui/material/Button';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 import { Link } from '@mui/material';
 import { useApp } from '../AppContext';
+import { CompatibleWithStrava } from './CompatibleWithStrava';
 
 const drawerWidth = 240;
 const navItems = ['Profile', 'Activities', 'About'];
@@ -80,6 +81,7 @@ export function DrawerAppBar() {
               </Link>
             ))}
           </Box>
+          <CompatibleWithStrava color="white" stack height={35} />
         </Toolbar>
       </AppBar>
       <Box component="nav">
