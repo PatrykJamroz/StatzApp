@@ -86,7 +86,7 @@ app.get('/api/athlete', async (req, res) => {
     .catch((error) => console.error({ error }));
 });
 
-app.get('/activities', async function (req, res) {
+app.get('/api/activities', async function (req, res) {
   if (!req.user.token) {
     res.redirect('/login');
   }
