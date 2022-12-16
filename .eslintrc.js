@@ -26,7 +26,14 @@ module.exports = {
   rules: {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react/destructuring-assignment': 'off',
+    'react/require-default-props': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'react/jsx-no-constructed-context-values': 'off',
     'import/prefer-default-export': 'off',
-    'no-var': 'off'
+    'no-var': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'prefer-destructuring': 'off'
   }
 };

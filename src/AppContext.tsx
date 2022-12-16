@@ -11,15 +11,22 @@ interface AppContextValue {
   athlete: Athlete | null;
   isLoading: boolean;
   activities: Activity[];
-  getActivities(): void;
+  getActivities(): Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppContextProvider({ children }: AppContextProviderProps) {
   const [athlete, setAthlete] = useState<Athlete | null>(null);
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activities, setActivities] = useState<Activity[]>(() => {
+    const activitiesInLocalStorage = localStorage.getItem('activities');
+    if (activitiesInLocalStorage) {
+      return JSON.parse(activitiesInLocalStorage);
+    }
+    return [];
+  });
   const [isLoading, setIsLoading] = useState(true);
+  const athleteFetched = React.useRef(false);
   const getAthlete = async () => {
     axios
       .get('/api/athlete')
@@ -32,13 +39,18 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
   };
 
   const getActivities = async () => {
-    axios
-      .get('/api/activities')
-      .then(({ data }) => setActivities(data.activitiesData))
-      .catch((e) => console.error(e));
+    try {
+      const activitiesData = await axios.get('/api/activities');
+      setActivities(activitiesData.data);
+      localStorage.setItem('activities', JSON.stringify(activitiesData));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
+    if (athleteFetched.current) return;
+    athleteFetched.current = true;
     getAthlete();
   }, []);
 

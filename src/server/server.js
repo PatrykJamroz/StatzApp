@@ -3,13 +3,15 @@ var passport = require('passport');
 var cors = require('cors');
 var logger = require('morgan');
 var StravaStrategy = require('passport-strava-oauth2').Strategy;
-
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cookieSession = require('cookie-session');
+
+var app = express();
+
 require('dotenv').config();
 
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) => import('node-fetch').then(({ default: _fetch }) => _fetch(...args));
 
 const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
@@ -36,8 +38,6 @@ passport.use(
     }
   )
 );
-
-var app = express();
 
 app.use(cors());
 app.use(logger('combined'));
@@ -87,14 +87,30 @@ app.get('/api/athlete', async (req, res) => {
 });
 
 app.get('/api/activities', async function (req, res) {
-  if (!req.user.token) {
-    res.redirect('/login');
+  // if (!req.user.token) {
+  //   res.redirect('/login');
+  // }
+  // const activitiesPromise = await fetch(
+  //   `https://www.strava.com/api/v3/athlete/activities?per_page=30&access_token=${req.user.token}`
+  // );
+  // const activitiesData = await activitiesPromise.json();
+  // res.json({ activitiesData });
+
+  let page = 1;
+  let activities = [];
+
+  while (true) {
+    const activitiesPromise = await fetch(
+      `https://www.strava.com/api/v3/athlete/activities?per_page=30&page=${page}&access_token=${req.user.token}`
+    );
+    const activitiesData = await activitiesPromise.json();
+    page += 1;
+    activities = [...activities, ...activitiesData];
+    logger({ page });
+    if (activitiesData.length < 30) {
+      return res.json(activities);
+    }
   }
-  const activitiesPromise = await fetch(
-    `https://www.strava.com/api/v3/athlete/activities?per_page=30&access_token=${req.user.token}`
-  );
-  const activitiesData = await activitiesPromise.json();
-  res.json({ activitiesData });
 });
 
 function ensureAuthenticated(req, res, next) {

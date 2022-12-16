@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useApp } from '../AppContext';
 
 export function Activities() {
   const appContext = useApp();
-  const [isLoading, setIsLoading] = useState(true);
+  const activitiesFetched = useRef(false);
+
+  async function fetchActivities() {
+    activitiesFetched.current = true;
+    appContext.getActivities();
+  }
 
   useEffect(() => {
-    appContext.getActivities();
-    setIsLoading(false);
+    if (appContext.activities.length > 0) return;
+    if (activitiesFetched.current) return;
+    fetchActivities();
   }, []);
 
   const rows = appContext.activities;
@@ -28,7 +34,7 @@ export function Activities() {
 
   return (
     <div style={{ height: 632, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={10} loading={isLoading} />
+      <DataGrid rows={rows} columns={columns} pageSize={10} />
     </div>
   );
 }
