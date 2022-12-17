@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import { Activity, Athlete } from './models/Strava';
+import { getActivities, getAthlete } from './API/appAPI';
 
 interface AppContextProviderProps {
   children: React.ReactNode;
@@ -11,7 +11,8 @@ interface AppContextValue {
   athlete: Athlete | null;
   isLoading: boolean;
   activities: Activity[];
-  getActivities(): Promise<void>;
+  fetchActivities(): Promise<void>;
+  isFetchingActivities: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -26,35 +27,47 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
     return [];
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingActivities, setIsFetchingActivitites] = useState(false);
+
   const athleteFetched = React.useRef(false);
-  const getAthlete = async () => {
-    axios
-      .get('/api/athlete')
-      .then(({ data }) => setAthlete(data))
-      .catch((e: any) => {
-        console.error(e);
-        setAthlete(null);
-      });
-    setIsLoading(false);
+
+  const fetchAthlete = async () => {
+    try {
+      const athleteData = await getAthlete();
+      setAthlete(athleteData);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getActivities = async () => {
+  const fetchActivities = async () => {
     try {
-      const activitiesData = await axios.get('/api/activities');
-      setActivities(activitiesData.data);
+      setIsFetchingActivitites(true);
+      const activitiesData = await getActivities();
+      setActivities(activitiesData);
       localStorage.setItem('activities', JSON.stringify(activitiesData));
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsFetchingActivitites(false);
     }
   };
 
   useEffect(() => {
     if (athleteFetched.current) return;
     athleteFetched.current = true;
-    getAthlete();
+    fetchAthlete();
   }, []);
 
-  const appContextValue: AppContextValue = { athlete, isLoading, activities, getActivities };
+  const appContextValue: AppContextValue = {
+    athlete,
+    isLoading,
+    activities,
+    fetchActivities,
+    isFetchingActivities
+  };
 
   return <AppContext.Provider value={appContextValue}>{children}</AppContext.Provider>;
 }

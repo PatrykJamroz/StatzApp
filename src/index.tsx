@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouterProvider, createHashRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { AppContextProvider } from './AppContext';
 import { About, Activities, Profile, Root } from './routes';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     element: <Root />,
     children: [

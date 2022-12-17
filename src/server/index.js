@@ -6,6 +6,7 @@ var StravaStrategy = require('passport-strava-oauth2').Strategy;
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cookieSession = require('cookie-session');
+const path = require('path');
 
 var app = express();
 
@@ -55,6 +56,8 @@ app.use(app.router);
 //   next();
 // });
 
+app.use(express.static(path.resolve(__dirname, '../../build')));
+
 const SCOPES = 'read,activity:read_all,read_all';
 
 app.get('/auth/strava', passport.authenticate('strava', { scope: SCOPES }), function (req, res) {
@@ -87,9 +90,9 @@ app.get('/api/athlete', async (req, res) => {
 });
 
 app.get('/api/activities', async function (req, res) {
-  // if (!req.user.token) {
-  //   res.redirect('/login');
-  // }
+  if (!req.user) {
+    res.json({ error: 'Not authenticated' });
+  }
   // const activitiesPromise = await fetch(
   //   `https://www.strava.com/api/v3/athlete/activities?per_page=30&access_token=${req.user.token}`
   // );
@@ -113,6 +116,11 @@ app.get('/api/activities', async function (req, res) {
   }
 });
 
+// app.get('*', (req, res) => {
+//   res.sendfile(path.resolve(__dirname, '../build/', 'index.html'));
+// });
+// /Users/patrykjamroz/webdev/stravastats/build/index.html
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -133,6 +141,6 @@ const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
 
-// app.get('/', function (req, res) {
-//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
+app.get('*', function (req, res) {
+  res.sendfile(path.join(__dirname, '../../build', 'index.html'));
+});

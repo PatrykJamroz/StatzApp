@@ -99,7 +99,7 @@ export function DrawerAppBar() {
           {drawer}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ pt: 3, width: '100%', border: 'dashed gray 1px' }}>
+      <Box component="main" sx={{ pt: 3, width: '100%' }}>
         <Toolbar />
         <Outlet />
       </Box>
