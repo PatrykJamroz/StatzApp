@@ -9,6 +9,7 @@ var cookieSession = require('cookie-session');
 const path = require('path');
 
 var app = express();
+app.use(express.static(path.resolve(__dirname, '../../build')));
 
 require('dotenv').config();
 
@@ -56,8 +57,6 @@ app.use(app.router);
 //   next();
 // });
 
-app.use(express.static(path.resolve(__dirname, '../../build')));
-
 const SCOPES = 'read,activity:read_all,read_all';
 
 app.get('/auth/strava', passport.authenticate('strava', { scope: SCOPES }), function (req, res) {
@@ -72,7 +71,7 @@ app.get(
     failureRedirect: '/login'
   }),
   function (req, res) {
-    res.redirect('http://localhost:3000');
+    res.redirect('http://localhost:8080');
   }
 );
 
@@ -141,6 +140,6 @@ const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
 
-app.get('*', function (req, res) {
+app.get('/*', function (req, res) {
   res.sendfile(path.join(__dirname, '../../build', 'index.html'));
 });
