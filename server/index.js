@@ -136,6 +136,10 @@ function ensureAuthenticated(req, res, next) {
 //   res.render('login', { user: req.user });
 // });
 
+app.get('/api/ping', function (req, res) {
+  res.send('pong');
+});
+
 const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
