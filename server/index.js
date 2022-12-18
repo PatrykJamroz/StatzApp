@@ -1,19 +1,20 @@
-var express = require('express');
-var passport = require('passport');
-var cors = require('cors');
-var logger = require('morgan');
-var StravaStrategy = require('passport-strava-oauth2').Strategy;
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var cookieSession = require('cookie-session');
-const path = require('path');
+const express = require("express");
+const passport = require("passport");
+const cors = require("cors");
+const logger = require("morgan");
+const StravaStrategy = require("passport-strava-oauth2").Strategy;
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
+const path = require("path");
 
-var app = express();
-app.use(express.static(path.resolve(__dirname, '../../build')));
+const app = express();
+app.use(express.static(path.resolve(__dirname, "../../build")));
 
-require('dotenv').config();
+require("dotenv").config();
 
-const fetch = (...args) => import('node-fetch').then(({ default: _fetch }) => _fetch(...args));
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: _fetch }) => _fetch(...args));
 
 const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
@@ -31,7 +32,7 @@ passport.use(
     {
       clientID: STRAVA_CLIENT_ID,
       clientSecret: STRAVA_CLIENT_SECRET,
-      callbackURL: '/auth/strava/callback'
+      callbackURL: "/auth/strava/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       process.nextTick(function () {
@@ -42,12 +43,12 @@ passport.use(
 );
 
 app.use(cors());
-app.use(logger('combined'));
+app.use(logger("combined"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.methodOverride());
-app.use(cookieSession({ secret: 'keyboard cat' }));
+app.use(cookieSession({ secret: "keyboard cat" }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
@@ -57,26 +58,34 @@ app.use(app.router);
 //   next();
 // });
 
-const SCOPES = 'read,activity:read_all,read_all';
-
-app.get('/auth/strava', passport.authenticate('strava', { scope: SCOPES }), function (req, res) {
-  // The request will be redirected to Strava for authentication, so this
-  // function will not be called.
-});
+const SCOPES = "read,activity:read_all,read_all";
 
 app.get(
-  '/auth/strava/callback',
-  passport.authenticate('strava', {
-    scope: SCOPES,
-    failureRedirect: '/login'
-  }),
+  "/auth/strava",
+  passport.authenticate("strava", { scope: SCOPES }),
   function (req, res) {
-    res.redirect('http://localhost:8080');
+    // The request will be redirected to Strava for authentication, so this
+    // function will not be called.
   }
 );
 
-app.get('/api/athlete', async (req, res) => {
-  fetch(`https://www.strava.com/api/v3/athlete?access_token=${req.user?.token ?? ''}`)
+app.get(
+  "/auth/strava/callback",
+  passport.authenticate("strava", {
+    scope: SCOPES,
+    failureRedirect: "/login",
+  }),
+  function (req, res) {
+    res.redirect("http://localhost:8080");
+  }
+);
+
+app.get("/api/athlete", async (req, res) => {
+  fetch(
+    `https://www.strava.com/api/v3/athlete?access_token=${
+      req.user?.token ?? ""
+    }`
+  )
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -88,9 +97,9 @@ app.get('/api/athlete', async (req, res) => {
     .catch((error) => console.error({ error }));
 });
 
-app.get('/api/activities', async function (req, res) {
+app.get("/api/activities", async function (req, res) {
   if (!req.user) {
-    res.json({ error: 'Not authenticated' });
+    res.json({ error: "Not authenticated" });
   }
   // const activitiesPromise = await fetch(
   //   `https://www.strava.com/api/v3/athlete/activities?per_page=30&access_token=${req.user.token}`
@@ -124,7 +133,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect('/login');
+  res.redirect("/login");
 }
 
 // app.get('/account', ensureAuthenticated, function (req, res) {
@@ -136,14 +145,14 @@ function ensureAuthenticated(req, res, next) {
 //   res.render('login', { user: req.user });
 // });
 
-app.get('/api/ping', function (req, res) {
-  res.send('pong');
+app.get("/api/ping", function (req, res) {
+  res.send("pong");
 });
 
 const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
 
-app.get('/*', function (req, res) {
-  res.sendfile(path.join(__dirname, '../../build', 'index.html'));
+app.get("/*", function (req, res) {
+  res.sendfile(path.join(__dirname, "../../build", "index.html"));
 });
