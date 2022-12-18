@@ -9,7 +9,7 @@ const cookieSession = require("cookie-session");
 const path = require("path");
 
 const app = express();
-app.use(express.static(path.resolve(__dirname, "../../build")));
+app.use(express.static(path.resolve(__dirname, "../client/build")));
 
 require("dotenv").config();
 
@@ -154,5 +154,5 @@ const listener = app.listen(process.env.PORT || 8080, () => {
 });
 
 app.get("/*", function (req, res) {
-  res.sendfile(path.join(__dirname, "../../build", "index.html"));
+  res.sendfile(path.join(__dirname, "../client/build", "index.html"));
 });
