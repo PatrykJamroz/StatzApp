@@ -6,7 +6,7 @@ export function Authorization() {
   };
   return (
     <Button onClick={login} variant="outlined">
-      <img alt="authorize" src="btn_strava_connectwith_orange.png" />
+      <img alt="authorize" src="/btn_strava_auth.png" />
     </Button>
   );
 }
