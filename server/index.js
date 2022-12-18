@@ -9,7 +9,7 @@ const cookieSession = require("cookie-session");
 const path = require("path");
 
 const app = express();
-app.use(express.static(path.resolve(__dirname, "../../build")));
+app.use(express.static(path.resolve(__dirname, "../client/build")));
 
 require("dotenv").config();
 
@@ -76,7 +76,8 @@ app.get(
     failureRedirect: "/login",
   }),
   function (req, res) {
-    res.redirect("http://localhost:8080");
+    //PORT: 8080 for build
+    res.redirect("http://localhost:3000");
   }
 );
 
@@ -153,6 +154,6 @@ const listener = app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
 
-app.get("/*", function (req, res) {
-  res.sendfile(path.join(__dirname, "../../build", "index.html"));
-});
+// app.get("/*", function (req, res) {
+//   res.sendfile(path.join(__dirname, "../client/build", "index.html"));
+// });

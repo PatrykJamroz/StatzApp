@@ -13,6 +13,7 @@ interface AppContextValue {
   activities: Activity[];
   fetchActivities(): Promise<void>;
   isFetchingActivities: boolean;
+  lastSyncDate: string | null;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -28,6 +29,13 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingActivities, setIsFetchingActivitites] = useState(false);
+  const [lastSyncDate, setLastSyncDate] = useState<string | null>(() => {
+    const lastSyncDate = localStorage.getItem('lastSync');
+    if (lastSyncDate) {
+      return JSON.parse(lastSyncDate);
+    }
+    return null;
+  });
 
   const athleteFetched = React.useRef(false);
 
@@ -43,11 +51,15 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
   };
 
   const fetchActivities = async () => {
+    const todayDate = new Date();
+    const formattedDate = todayDate.toUTCString();
     try {
       setIsFetchingActivitites(true);
       const activitiesData = await getActivities();
       setActivities(activitiesData);
+      setLastSyncDate(formattedDate);
       localStorage.setItem('activities', JSON.stringify(activitiesData));
+      localStorage.setItem('lastSync', JSON.stringify(formattedDate));
     } catch (e) {
       console.error(e);
     } finally {
@@ -66,7 +78,8 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
     isLoading,
     activities,
     fetchActivities,
-    isFetchingActivities
+    isFetchingActivities,
+    lastSyncDate
   };
 
   return <AppContext.Provider value={appContextValue}>{children}</AppContext.Provider>;
