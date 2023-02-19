@@ -1,5 +1,7 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
+import { Button, Chip, Grid, Skeleton } from '@mui/material';
+import { Sync } from '@mui/icons-material';
+
 import { useApp } from '../AppContext';
 
 export function Activities() {
@@ -52,13 +54,17 @@ export function Activities() {
 
   return (
     <>
-      <Button
-        variant="outlined"
-        onClick={appContext.fetchActivities}
-        disabled={appContext.isFetchingActivities}>
-        Fetch Activitites
-      </Button>
-      <div style={{ height: 632, width: '100%' }}>
+      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={appContext.fetchActivities}
+          disabled={appContext.isFetchingActivities}>
+          Fetch Activitites
+        </Button>
+        {appContext.lastSyncDate && <LastSyncChip />}
+      </Grid>
+      <div style={{ height: 632, width: '100%', marginTop: 10 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -66,6 +72,20 @@ export function Activities() {
           loading={appContext.isFetchingActivities}
         />
       </div>
+    </>
+  );
+}
+
+function LastSyncChip() {
+  const appContext = useApp();
+
+  return (
+    <>
+      {!appContext.isFetchingActivities ? (
+        <Chip icon={<Sync />} label={`Last sync: ${appContext.lastSyncDate}`} />
+      ) : (
+        <Skeleton variant="rounded" width={300} height={32} />
+      )}
     </>
   );
 }
