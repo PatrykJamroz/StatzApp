@@ -1,5 +1,6 @@
 import { getSession, GetSessionParams } from "next-auth/react";
 import { StravaActivity } from "@/models/Strava";
+import { getActivities } from "@/api/StravaAPI";
 
 export default function Activities({
   activities,
@@ -8,7 +9,6 @@ export default function Activities({
 }) {
   return (
     <div>
-      Activities
       <>{JSON.stringify(activities)}</>
     </div>
   );
@@ -25,10 +25,7 @@ export async function getServerSideProps(
   const accessToken = session?.accessToken;
 
   try {
-    const res = await fetch(
-      `https://www.strava.com/api/v3/athlete/activities?per_page=30&page=1&access_token=${accessToken}`
-    );
-    const activities = await res.json();
+    const activities = await getActivities(accessToken);
     return {
       props: { activities },
     };

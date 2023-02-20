@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSession, GetSessionParams, useSession } from "next-auth/react";
 import { User } from "@/components/User";
 import { StravaAthlete } from "@/models/Strava";
+import { getAthlete } from "@/api/StravaAPI";
 
 export default function Home({ athlete }: { athlete: StravaAthlete }) {
   const { data: session } = useSession();
@@ -30,10 +31,8 @@ export async function getServerSideProps(
 ): Promise<{ props: { athlete: StravaAthlete } }> {
   const session = await getSession(context);
   const accessToken = session?.accessToken;
-  const res = await fetch(
-    `https://www.strava.com/api/v3/athlete?access_token=${accessToken}`
-  );
-  const athlete: StravaAthlete = await res.json();
+  //TODO fix
+  const athlete: StravaAthlete = await getAthlete(accessToken!);
   return {
     props: { athlete },
   };
