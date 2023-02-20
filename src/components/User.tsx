@@ -1,4 +1,4 @@
-import { StravaAthlete } from "@/models/strava";
+import { StravaAthlete } from "@/models/Strava";
 
 export function User({ athlete }: { athlete: StravaAthlete }) {
   if (!athlete) {

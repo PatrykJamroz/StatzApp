@@ -1,5 +1,5 @@
 import { getSession, GetSessionParams } from "next-auth/react";
-import { StravaActivity } from "@/models/strava";
+import { StravaActivity } from "@/models/Strava";
 
 export default function Activities({
   activities,

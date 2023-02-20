@@ -2,7 +2,7 @@ import LoginButton from "@/components/LoginButton";
 import Link from "next/link";
 import { getSession, GetSessionParams, useSession } from "next-auth/react";
 import { User } from "@/components/User";
-import { StravaAthlete } from "@/models/strava";
+import { StravaAthlete } from "@/models/Strava";
 
 export default function Home({ athlete }: { athlete: StravaAthlete }) {
   const { data: session } = useSession();

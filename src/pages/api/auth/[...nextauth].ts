@@ -1,6 +1,6 @@
 import NextAuth, { Session, User } from "next-auth";
 import StravaProvider from "next-auth/providers/strava";
-import { StravaAthlete } from "@/models/strava";
+import { StravaAthlete } from "@/models/Strava";
 
 interface Token {
   id: string;
