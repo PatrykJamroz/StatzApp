@@ -34,7 +34,6 @@ export async function getServerSideProps(
     `https://www.strava.com/api/v3/athlete?access_token=${accessToken}`
   );
   const athlete: StravaAthlete = await res.json();
-  console.log({ session });
   return {
     props: { athlete },
   };
