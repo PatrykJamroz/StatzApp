@@ -1,13 +1,43 @@
 import { getSession, GetSessionParams } from "next-auth/react";
 import { StravaActivity } from "@/models/Strava";
-import { getActivities } from "@/api/StravaAPI";
+import { getAllActivities } from "@/api/StravaAPI";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { useState } from "react";
 
-export default function Activities({
-  activities,
-}: {
-  activities: StravaActivity[];
-}) {
+export default function Activities({ accessToken }: { accessToken: string }) {
+  const [activities, setActivities] = useState<StravaActivity[]>(() => {
+    const activitiesInLocalStorage = localStorage.getItem("activities");
+    if (activitiesInLocalStorage) {
+      return JSON.parse(activitiesInLocalStorage);
+    }
+    return [];
+  });
+  const [isFetchingActivities, setIsFetchingActivitites] = useState(false);
+  const [lastSyncDate, setLastSyncDate] = useState<string | null>(() => {
+    const lastSyncDate = localStorage.getItem("lastSync");
+    if (lastSyncDate) {
+      return JSON.parse(lastSyncDate);
+    }
+    return null;
+  });
+
+  const handleFetchActivities = async () => {
+    setIsFetchingActivitites(true);
+
+    const todayDate = new Date();
+    const formattedDate = todayDate.toUTCString();
+
+    const fetchedActivities = await getAllActivities(accessToken);
+
+    setActivities(fetchedActivities);
+    localStorage.setItem("activities", JSON.stringify(fetchedActivities));
+
+    setLastSyncDate(formattedDate);
+    localStorage.setItem("lastSync", JSON.stringify(formattedDate));
+
+    setIsFetchingActivitites(false);
+  };
+
   const rows: GridRowsProp = activities;
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 300 },
@@ -42,12 +72,20 @@ export default function Activities({
   ];
 
   return (
-    <div style={{ height: 631 }}>
+    <div>
+      {isFetchingActivities ? (
+        <>Fetching your activities, it may take a while...</>
+      ) : (
+        <button disabled={isFetchingActivities} onClick={handleFetchActivities}>
+          fetch activities
+        </button>
+      )}
+      <>{`Last sync: ${lastSyncDate}`}</>
       <DataGrid
         rows={rows}
         columns={columns}
         pageSize={10}
-        sx={{ color: "white" }}
+        sx={{ color: "white", height: 631 }}
       />
     </div>
   );
@@ -63,17 +101,7 @@ export async function getServerSideProps(
   }
   const accessToken = session?.accessToken;
 
-  try {
-    const activities = await getActivities(accessToken);
-    return {
-      props: { activities },
-    };
-  } catch (err) {
-    return {
-      redirect: {
-        destination: "/",
-        statusCode: 307,
-      },
-    };
-  }
+  return {
+    props: { accessToken },
+  };
 }
