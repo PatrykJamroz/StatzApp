@@ -5,9 +5,11 @@ import { User } from "@/components/User";
 import { StravaAthlete } from "@/models/Strava";
 import { getAthlete } from "@/api/StravaAPI";
 
-export default function Home({ athlete }: { athlete: StravaAthlete }) {
+interface HomeProps {
+  athlete: StravaAthlete | null;
+}
+export default function Home(props: HomeProps) {
   const { data: session } = useSession();
-
   return (
     <div
       style={{
@@ -16,9 +18,9 @@ export default function Home({ athlete }: { athlete: StravaAthlete }) {
     >
       <h1>Strava Statz</h1>
       <LoginButton />
-      {session && (
+      {session && props.athlete && (
         <>
-          <User athlete={athlete} />
+          <User athlete={props.athlete} />
           <Link href={"/activities"}>Go to activities</Link>
         </>
       )}
@@ -28,12 +30,17 @@ export default function Home({ athlete }: { athlete: StravaAthlete }) {
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined
-): Promise<{ props: { athlete: StravaAthlete } }> {
+): Promise<{ props: HomeProps }> {
   const session = await getSession(context);
   const accessToken = session?.accessToken;
-  //TODO fix
-  const athlete: StravaAthlete = await getAthlete(accessToken!);
-  return {
-    props: { athlete },
-  };
+  try {
+    //TODO fix !
+    const athlete: StravaAthlete = await getAthlete(accessToken!);
+    return {
+      props: { athlete },
+    };
+  } catch (err) {
+    console.error(err);
+    return { props: { athlete: null } };
+  }
 }

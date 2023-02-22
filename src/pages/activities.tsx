@@ -1,41 +1,71 @@
-import { getSession, GetSessionParams } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { StravaActivity } from "@/models/Strava";
-import { getAllActivities } from "@/api/StravaAPI";
+import { getAllActivities, updateActivities } from "@/api/StravaAPI";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useState } from "react";
+import Link from "next/link";
 
-export default function Activities({ accessToken }: { accessToken: string }) {
+interface ActivitiesProps {
+  initialActivities: StravaActivity[];
+  initialLastSyncDate: string | null;
+}
+
+export default function Activities(props: ActivitiesProps) {
+  const { data: session } = useSession();
+
   const [activities, setActivities] = useState<StravaActivity[]>(() => {
-    const activitiesInLocalStorage = localStorage.getItem("activities");
+    const activitiesInLocalStorage =
+      typeof window !== "undefined" ? localStorage.getItem("activities") : null;
     if (activitiesInLocalStorage) {
       return JSON.parse(activitiesInLocalStorage);
     }
-    return [];
+    return props.initialActivities;
   });
   const [isFetchingActivities, setIsFetchingActivitites] = useState(false);
   const [lastSyncDate, setLastSyncDate] = useState<string | null>(() => {
-    const lastSyncDate = localStorage.getItem("lastSync");
+    const lastSyncDate =
+      typeof window !== "undefined" ? localStorage.getItem("lastSync") : null;
     if (lastSyncDate) {
       return JSON.parse(lastSyncDate);
     }
-    return null;
+    return props.initialLastSyncDate;
   });
+
+  if (!session) {
+    return <></>;
+  }
+
+  const accessToken = session.accessToken;
 
   const handleFetchActivities = async () => {
     setIsFetchingActivitites(true);
 
-    const todayDate = new Date();
-    const formattedDate = todayDate.toUTCString();
+    try {
+      const fetchedActivities =
+        activities.length === 0
+          ? await getAllActivities(accessToken)
+          : await updateActivities(accessToken, activities);
 
-    const fetchedActivities = await getAllActivities(accessToken);
+      const todayDate = new Date();
+      const formattedDate = todayDate.toUTCString();
 
-    setActivities(fetchedActivities);
-    localStorage.setItem("activities", JSON.stringify(fetchedActivities));
+      setActivities(fetchedActivities);
+      localStorage.setItem("activities", JSON.stringify(fetchedActivities));
 
-    setLastSyncDate(formattedDate);
-    localStorage.setItem("lastSync", JSON.stringify(formattedDate));
+      setLastSyncDate(formattedDate);
+      localStorage.setItem("lastSync", JSON.stringify(formattedDate));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsFetchingActivitites(false);
+    }
+  };
 
-    setIsFetchingActivitites(false);
+  const handleClearData = () => {
+    localStorage.removeItem("activities");
+    localStorage.removeItem("lastSync");
+    setActivities([]);
+    setLastSyncDate(null);
   };
 
   const rows: GridRowsProp = activities;
@@ -73,35 +103,35 @@ export default function Activities({ accessToken }: { accessToken: string }) {
 
   return (
     <div>
+      <Link href={"/"}>Go to user page</Link>
       {isFetchingActivities ? (
         <>Fetching your activities, it may take a while...</>
       ) : (
-        <button disabled={isFetchingActivities} onClick={handleFetchActivities}>
-          fetch activities
-        </button>
+        <div>
+          <button
+            disabled={isFetchingActivities}
+            onClick={handleFetchActivities}
+          >
+            fetch activities
+          </button>
+          <br />
+          <button disabled={isFetchingActivities} onClick={handleClearData}>
+            clear data
+          </button>
+        </div>
       )}
-      <>{`Last sync: ${lastSyncDate}`}</>
       <DataGrid
         rows={rows}
         columns={columns}
         pageSize={10}
         sx={{ color: "white", height: 631 }}
       />
+      {lastSyncDate && <>{`Last sync: ${lastSyncDate}`}</>}
     </div>
   );
 }
-
-export async function getServerSideProps(
-  context: GetSessionParams | undefined
-) {
-  const session = await getSession(context);
-
-  if (!session) {
-    return { redirect: { destination: "/" } };
-  }
-  const accessToken = session?.accessToken;
-
+export async function getStaticProps() {
   return {
-    props: { accessToken },
+    props: { initialActivities: [], initialLastSyncDate: null },
   };
 }
