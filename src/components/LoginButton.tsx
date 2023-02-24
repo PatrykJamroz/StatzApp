@@ -6,14 +6,6 @@ export default function LoginButton() {
   if (session) {
     return (
       <div>
-        Signed in as {session.user.name} <br />
-        <img
-          loading="lazy"
-          src={session?.user.image ?? ""}
-          width={50}
-          height={50}
-        />
-        <br />
         <button onClick={() => signOut()}>Sign out</button>
       </div>
     );

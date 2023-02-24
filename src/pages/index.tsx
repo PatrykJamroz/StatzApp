@@ -11,20 +11,14 @@ interface HomeProps {
 export default function Home(props: HomeProps) {
   const { data: session } = useSession();
   return (
-    <div
-      style={{
-        textAlign: "center",
-      }}
-    >
-      <h1>Strava Statz</h1>
-      <LoginButton />
+    <>
       {session && props.athlete && (
         <>
           <User athlete={props.athlete} />
           <Link href={"/activities"}>Go to activities</Link>
         </>
       )}
-    </div>
+    </>
   );
 }
 
