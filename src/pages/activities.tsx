@@ -124,7 +124,7 @@ export default function Activities(props: ActivitiesProps) {
         rows={rows}
         columns={columns}
         pageSize={10}
-        sx={{ color: "white", height: 631 }}
+        sx={{ height: 631 }}
       />
       {lastSyncDate && <>{`Last sync: ${lastSyncDate}`}</>}
     </div>
