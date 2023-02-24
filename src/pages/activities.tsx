@@ -3,7 +3,6 @@ import { StravaActivity } from "@/models/Strava";
 import { getAllActivities, updateActivities } from "@/api/StravaAPI";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useState } from "react";
-import Link from "next/link";
 
 interface ActivitiesProps {
   initialActivities: StravaActivity[];
@@ -102,31 +101,45 @@ export default function Activities(props: ActivitiesProps) {
   ];
 
   return (
-    <div>
-      <Link href={"/"}>Go to user page</Link>
+    <div className={"p-5"}>
       {isFetchingActivities ? (
         <>Fetching your activities, it may take a while...</>
       ) : (
-        <div>
-          <button
-            disabled={isFetchingActivities}
-            onClick={handleFetchActivities}
-          >
-            fetch activities
-          </button>
-          <br />
-          <button disabled={isFetchingActivities} onClick={handleClearData}>
-            clear data
-          </button>
+        <div className={"flex justify-between items-center"}>
+          <div className={"flex gap-1.5 mb-2"}>
+            <button
+              disabled={isFetchingActivities}
+              onClick={handleFetchActivities}
+              className={
+                "bg-gray-900 rounded p-2 text-gray-400 hover:text-white text-sm  font-semibold"
+              }
+            >
+              Get activities
+            </button>
+            <br />
+            <button
+              disabled={isFetchingActivities}
+              onClick={handleClearData}
+              className={
+                "bg-gray-900 rounded p-2 text-gray-400 hover:text-white text-sm  font-semibold"
+              }
+            >
+              Clear activity data
+            </button>
+          </div>
+          {lastSyncDate && (
+            <p className={"text-sm h-5"}>{`Last sync: ${lastSyncDate}`}</p>
+          )}
         </div>
       )}
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={10}
-        sx={{ height: 631 }}
-      />
-      {lastSyncDate && <>{`Last sync: ${lastSyncDate}`}</>}
+      <div className={"justify-center flex"}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={10}
+          sx={{ height: 631 }}
+        />
+      </div>
     </div>
   );
 }
