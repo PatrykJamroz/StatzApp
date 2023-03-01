@@ -3,6 +3,7 @@ export interface StravaAthlete {
   bio: string;
   city: string;
   country: string;
+  created_at: string;
 }
 export interface StravaActivity {
   id: number;

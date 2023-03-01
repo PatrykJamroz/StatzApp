@@ -1,9 +1,8 @@
-import LoginButton from "@/components/LoginButton";
-import Link from "next/link";
 import { getSession, GetSessionParams, useSession } from "next-auth/react";
 import { User } from "@/components/User";
 import { StravaAthlete } from "@/models/Strava";
 import { getAthlete } from "@/api/StravaAPI";
+import { SignIn } from "@/components/SignIn";
 
 interface HomeProps {
   athlete: StravaAthlete | null;
@@ -11,20 +10,9 @@ interface HomeProps {
 export default function Home(props: HomeProps) {
   const { data: session } = useSession();
   return (
-    <div
-      style={{
-        textAlign: "center",
-      }}
-    >
-      <h1>Strava Statz</h1>
-      <LoginButton />
-      {session && props.athlete && (
-        <>
-          <User athlete={props.athlete} />
-          <Link href={"/activities"}>Go to activities</Link>
-        </>
-      )}
-    </div>
+    <>
+      {session && props.athlete ? <User athlete={props.athlete} /> : <SignIn />}
+    </>
   );
 }
 

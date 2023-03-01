@@ -3,7 +3,7 @@ import { StravaActivity } from "@/models/Strava";
 import { getAllActivities, updateActivities } from "@/api/StravaAPI";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useState } from "react";
-import Link from "next/link";
+import { SignIn } from "@/components/SignIn";
 
 interface ActivitiesProps {
   initialActivities: StravaActivity[];
@@ -32,7 +32,7 @@ export default function Activities(props: ActivitiesProps) {
   });
 
   if (!session) {
-    return <></>;
+    return <SignIn />;
   }
 
   const accessToken = session.accessToken;
@@ -70,7 +70,20 @@ export default function Activities(props: ActivitiesProps) {
 
   const rows: GridRowsProp = activities;
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 300 },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 300,
+      renderCell: (params) => (
+        <a
+          href={`https://www.strava.com/activities/${params.id}`}
+          target={"_blank"}
+          rel="noreferrer"
+        >
+          {params.value}
+        </a>
+      ),
+    },
     { field: "type", headerName: "Type", width: 150 },
     {
       field: "max_speed",
@@ -102,31 +115,48 @@ export default function Activities(props: ActivitiesProps) {
   ];
 
   return (
-    <div>
-      <Link href={"/"}>Go to user page</Link>
+    <div className={"p-5"}>
       {isFetchingActivities ? (
         <>Fetching your activities, it may take a while...</>
       ) : (
-        <div>
-          <button
-            disabled={isFetchingActivities}
-            onClick={handleFetchActivities}
-          >
-            fetch activities
-          </button>
-          <br />
-          <button disabled={isFetchingActivities} onClick={handleClearData}>
-            clear data
-          </button>
+        <div
+          className={"flex justify-between items-center sm:flex-row flex-col"}
+        >
+          <div className={"flex gap-1.5 mb-2"}>
+            <button
+              disabled={isFetchingActivities}
+              onClick={handleFetchActivities}
+              className={
+                "bg-gray-900 rounded p-2 text-gray-400 hover:text-white text-sm  font-semibold"
+              }
+            >
+              Get activities
+            </button>
+            <br />
+            <button
+              disabled={isFetchingActivities}
+              onClick={handleClearData}
+              className={
+                "bg-gray-900 rounded p-2 text-gray-400 hover:text-white text-sm  font-semibold"
+              }
+            >
+              Clear activity data
+            </button>
+          </div>
+          {lastSyncDate && (
+            <p className={"text-sm"}>{`Last sync: ${lastSyncDate}`}</p>
+          )}
         </div>
       )}
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={10}
-        sx={{ color: "white", height: 631 }}
-      />
-      {lastSyncDate && <>{`Last sync: ${lastSyncDate}`}</>}
+      <div className={"justify-center flex"}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+          sx={{ height: 631 }}
+        />
+      </div>
     </div>
   );
 }
