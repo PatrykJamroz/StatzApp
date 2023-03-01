@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { PoweredByStravaIcon } from "@/components/PoweredByStravaIcon";
-import LoginButton from "@/components/LoginButton";
 import { useRouter } from "next/router";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export function Navbar() {
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     setIsNavbarCollapsed(true);
@@ -73,7 +74,13 @@ export function Navbar() {
                 </Link>
               </li>
               <li>
-                <LoginButton />
+                <Link
+                  href={""}
+                  className={getItemClassname("")}
+                  onClick={() => (session ? signOut() : signIn())}
+                >
+                  {`Sign ${session ? "out" : "in"}`}
+                </Link>
               </li>
               <li>
                 <a

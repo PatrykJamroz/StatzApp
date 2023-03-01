@@ -70,7 +70,20 @@ export default function Activities(props: ActivitiesProps) {
 
   const rows: GridRowsProp = activities;
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 300 },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 300,
+      renderCell: (params) => (
+        <a
+          href={`https://www.strava.com/activities/${params.id}`}
+          target={"_blank"}
+          rel="noreferrer"
+        >
+          {params.value}
+        </a>
+      ),
+    },
     { field: "type", headerName: "Type", width: 150 },
     {
       field: "max_speed",
@@ -140,6 +153,7 @@ export default function Activities(props: ActivitiesProps) {
           rows={rows}
           columns={columns}
           pageSize={10}
+          rowsPerPageOptions={[10]}
           sx={{ height: 631 }}
         />
       </div>

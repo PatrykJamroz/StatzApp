@@ -18,6 +18,7 @@ export function User({ athlete }: { athlete: StravaAthlete }) {
           height={200}
           width={200}
           alt={"profile photo"}
+          className={"rounded border-2"}
         />
       </div>
       <div
