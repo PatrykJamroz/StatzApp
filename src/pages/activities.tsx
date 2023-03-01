@@ -105,7 +105,9 @@ export default function Activities(props: ActivitiesProps) {
       {isFetchingActivities ? (
         <>Fetching your activities, it may take a while...</>
       ) : (
-        <div className={"flex justify-between items-center"}>
+        <div
+          className={"flex justify-between items-center sm:flex-row flex-col"}
+        >
           <div className={"flex gap-1.5 mb-2"}>
             <button
               disabled={isFetchingActivities}
@@ -128,7 +130,7 @@ export default function Activities(props: ActivitiesProps) {
             </button>
           </div>
           {lastSyncDate && (
-            <p className={"text-sm h-5"}>{`Last sync: ${lastSyncDate}`}</p>
+            <p className={"text-sm"}>{`Last sync: ${lastSyncDate}`}</p>
           )}
         </div>
       )}
