@@ -8,8 +8,10 @@ export function User({ athlete }: { athlete: StravaAthlete }) {
     return null;
   }
   return (
-    <div className={"max-w-3xl grid grid-cols-3 gap-4 mx-auto p-5"}>
-      <div className={"col-span-1 mx-auto"}>
+    <div
+      className={"max-w-3xl grid sm:grid-cols-3 grid-cols-1 gap-4 mx-auto p-5 "}
+    >
+      <div className={"col-span-1 mx-auto sm:col-span-1"}>
         <img
           loading="lazy"
           src={session?.user.image ?? ""}
@@ -18,7 +20,11 @@ export function User({ athlete }: { athlete: StravaAthlete }) {
           alt={"profile photo"}
         />
       </div>
-      <div className={"col-span-2 h-50"}>
+      <div
+        className={
+          "sm:col-span-2 sm:h-50 h-100 col-span-1 text-center sm:text-left"
+        }
+      >
         <p className={"text-3xl font-semibold"}>{`${session.user.name}`}</p>
         {(athlete.country || athlete.city) && (
           <p className={"text-lg font-normal"}>
