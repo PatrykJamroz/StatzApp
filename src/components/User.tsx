@@ -5,7 +5,7 @@ export function User({ athlete }: { athlete: StravaAthlete }) {
   const { data: session } = useSession();
 
   if (!athlete || !session) {
-    return null;
+    return <>Not signed in</>;
   }
   return (
     <div

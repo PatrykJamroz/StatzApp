@@ -3,6 +3,7 @@ import { StravaActivity } from "@/models/Strava";
 import { getAllActivities, updateActivities } from "@/api/StravaAPI";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useState } from "react";
+import { SignIn } from "@/components/SignIn";
 
 interface ActivitiesProps {
   initialActivities: StravaActivity[];
@@ -31,7 +32,7 @@ export default function Activities(props: ActivitiesProps) {
   });
 
   if (!session) {
-    return <></>;
+    return <SignIn />;
   }
 
   const accessToken = session.accessToken;

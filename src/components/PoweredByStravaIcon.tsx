@@ -12,7 +12,6 @@ export function PoweredByStravaIcon(props: PoweredByStravaIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 162.02 30.21"
       height={props.size}
-      // width={props.size}
     >
       <path
         fill={props.fill}
