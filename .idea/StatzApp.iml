@@ -8,7 +8,7 @@
   <component name="TemplatesService">
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/node_modules/workbox-build/build/templates" />
+        <option value="$MODULE_DIR$/../stravastats/node_modules/workbox-build/build/templates" />
       </list>
     </option>
   </component>
