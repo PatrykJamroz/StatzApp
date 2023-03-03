@@ -1,6 +1,5 @@
-import React from "react";
 import { ConnectWithStravaIcon } from "@/components/ConnectWithStravaIcon";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 export function SignIn() {
   return (
