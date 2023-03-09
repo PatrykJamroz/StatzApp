@@ -8,12 +8,15 @@ interface HomeProps {
   athlete: StravaAthlete | null;
 }
 export default function Home(props: HomeProps) {
-  const { data: session } = useSession();
-  return (
-    <>
-      {session && props.athlete ? <User athlete={props.athlete} /> : <SignIn />}
-    </>
-  );
+  const { status } = useSession();
+
+  if (status === "loading") {
+    return <div className={"text-center"}>Loading...</div>;
+  } else if (status === "authenticated" && props.athlete) {
+    return <User athlete={props.athlete} />;
+  } else {
+    return <SignIn />;
+  }
 }
 
 export async function getServerSideProps(
