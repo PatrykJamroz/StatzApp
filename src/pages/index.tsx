@@ -23,6 +23,7 @@ export async function getServerSideProps(
   context: GetSessionParams | undefined
 ): Promise<{ props: HomeProps }> {
   const session = await getSession(context);
+  console.log(session);
   const accessToken = session?.accessToken;
   try {
     //TODO fix !
