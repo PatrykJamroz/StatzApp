@@ -32,3 +32,5 @@ describe("app", () => {
     );
   });
 });
+
+export {};

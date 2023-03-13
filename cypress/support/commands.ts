@@ -36,6 +36,7 @@
 //   }
 // }
 
+// @ts-ignore
 Cypress.Commands.add("login", () => {
   cy.intercept("/api/auth/session", { fixture: "session.json" }).as("session");
 
@@ -47,3 +48,5 @@ Cypress.Commands.add("login", () => {
   // We are unsure if this is true and if true, when it needs to be refreshed.
   cy.setCookie("next-auth.session-token", Cypress.env("TEST_SESSION_COOKIE"));
 });
+
+export {};
