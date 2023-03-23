@@ -19,6 +19,7 @@ export function User({ athlete }: { athlete: StravaAthlete }) {
           width={200}
           alt={"profile photo"}
           className={"rounded border-2"}
+          data-cy={"athleteImage"}
         />
       </div>
       <div
